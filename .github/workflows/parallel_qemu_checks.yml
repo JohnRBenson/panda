@@ -30,10 +30,10 @@ jobs:
       run: wget "https://raw.githubusercontent.com/panda-re/panda/${GITHUB_SHA}/panda/docker/update.sh"
 
     - name: Start a persistent container, run update.sh to fetch this commit and rebuild PANDA and run tests
-      run: docker run --name panda_test -v $(pwd)/update.sh:/update.sh --rm -td pandare/panda bash /update.sh $GITHUB_SHA
+      run: docker run --name panda_test -v $(pwd)/update.sh:/update.sh --rm -t -e PANDA_TEST=yes pandare/panda bash -c "/update.sh $GITHUB_SHA; cd /panda/build; ../build.sh ${{ matrix.target }}"
 
-    - name: Inside container, run QEMU checks
-      run: docker exec -t -e PANDA_TEST=yes panda_test bash -c "cd /panda/build; ../build.sh ${{ matrix.target }}"
+    #- name: Inside container, run QEMU checks
+    #  run: docker exec -t -e PANDA_TEST=yes panda_test bash -c "cd /panda/build; ../build.sh ${{ matrix.target }}"
 
     - name: Cleanup container/images
       run: |
